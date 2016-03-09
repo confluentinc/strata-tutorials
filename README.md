@@ -2,7 +2,21 @@
 Content for Spring 2016 Strata tutorials
 ----------------------------------------
 
-Repository with materials fo the Advanced Kafka Tutorial. Current diretions:
+This repo contains content for the advnaced strata tutorial (Kafka Connect, Kafka Streams, Security).
+
+Basic Plan
+----------
+We'll coach users through the following:
+* Start a Kafka cluster (and Connect cluster) with Vagrant, create and configure topics for our use cases (TBD: should we set up some security rules at this time, including some quotas?))
+* Use Kafka Connect to read in the contents of a database (in our case, a Sqlite database with NY Taxi trips)
+* Coach users through some data manipulation with streams: reverse-geocoding coordinates in the data, joining with weather, and some aggregation
+* Write out the data into something easy (file? elastic? we'll figure it out later)
+* Talk a little more about security
+
+Getting the data
+----------------
+
+Repository with materials fo the Advanced Kafka Tutorial. Current directions to get the source data:
 
 * Download the [NY yellow cab data](http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml) from December 2015
 * Uncompress the file
