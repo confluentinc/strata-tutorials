@@ -1,4 +1,5 @@
 # strata-tutorials
+
 Content for Spring 2016 Strata tutorials
 ----------------------------------------
 
@@ -31,3 +32,7 @@ turn it into CSV. I loaded that content into Excel and did some manual manipulat
 timestamps to UNIX timestamps, and exported into CSV). You probably don't have to recreate this file (it's small, so I just
 dropped it in the data folder).
 
+
+Neighborhood files
+==================
+You can get these from http://www.zillow.com/howto/api/neighborhood-boundaries.htm
