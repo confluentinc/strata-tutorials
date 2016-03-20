@@ -22,6 +22,7 @@ class GeoInfo {
     public static GeoInfo fromSimpleFeature(SimpleFeature feature) {
         GeoInfo that = new GeoInfo();
         for (Property p: feature.getProperties()) {
+            System.err.printf("name=%s, value=%s\n",p.getName(),p.getValue());
             if (p.getName().toString().equals("NAME"))
                 that.name = p.getValue().toString();
             if (p.getName().toString().equals("STATE"))

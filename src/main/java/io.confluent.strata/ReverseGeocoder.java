@@ -1,5 +1,6 @@
 package io.confluent.strata;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -68,6 +69,19 @@ public class ReverseGeocoder {
                 return candidate;
         }
         return null;
+    }
+
+    public List<GeoInfo> findAllGeoInfoForPoint(double x, double y) {
+        Coordinate coordinate = new Coordinate(x,y);
+        Geometry geometry = geometryFactory.createPoint(coordinate);
+        List<GeoInfo> candidates =  qt.query(new Envelope(coordinate));
+        System.err.printf("Looking at a list of %d candidates\n", candidates.size());
+        List<GeoInfo> stuffFound = Lists.newArrayList();
+        for (GeoInfo candidate: candidates) {
+            if (candidate.multiPolygon.contains(geometry))
+                stuffFound.add(candidate);
+        }
+        return stuffFound;
     }
 
 }
