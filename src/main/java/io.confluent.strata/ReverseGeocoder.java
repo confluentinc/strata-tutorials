@@ -7,8 +7,11 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.SpatialIndex;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
 import com.vividsolutions.jts.index.strtree.STRtree;
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.kafka.streams.kstream.ValueMapper;
 import org.geotools.data.*;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -25,12 +28,24 @@ import java.util.Map;
 /**
  * Created by jadler on 3/17/16.
  */
-public class ReverseGeocoder {
+public class ReverseGeocoder implements ValueMapper<GenericRecord, GenericRecord>  {
 
     SpatialIndex qt = new STRtree();
+    String latitudeKey = null;
+    String longitudeKey = null;
+    String locationNameKey = null;
 
     public ReverseGeocoder(Collection<File> shapefiles)  {
         super();
+        shapefiles.forEach(file -> loadShapeFile(file));
+    }
+
+    public ReverseGeocoder(Collection<File> shapefiles, String initialLatitudeKey,
+                           String initialLongitudeKey, String initialLocationName)  {
+        super();
+        latitudeKey = initialLatitudeKey;
+        longitudeKey = initialLongitudeKey;
+        locationNameKey = initialLocationName;
         shapefiles.forEach(file -> loadShapeFile(file));
     }
 
@@ -84,4 +99,28 @@ public class ReverseGeocoder {
         return stuffFound;
     }
 
+    Schema schema = null;
+
+    @Override
+    public GenericRecord apply(GenericRecord genericRecord) {
+        if (schema == null) {
+            // hack to copy the schema
+            String oldSchemaString = schema.toString();
+            schema = (new Schema.Parser()).parse(oldSchemaString);
+            List<Schema.Field> fields = Lists.newArrayList(schema.getFields());
+            fields.add(new Schema.Field(
+                    locationNameKey,
+                    Schema.create(Schema.Type.STRING),
+                    "value from reverse lookup",
+                    null));
+            schema.setFields(fields);
+        }
+
+        Double latitude = (Double) genericRecord.get(latitudeKey);
+        Double longitude = (Double) genericRecord.get(longitudeKey);
+        String neighborhood =findGeoInfoForPoint(latitude, longitude).name;
+        GenericRecord newRecord = (GenericRecord) GenericData.get().newRecord((Object) genericRecord, schema);
+        newRecord.put(locationNameKey, neighborhood);
+        return newRecord;
+    }
 }
