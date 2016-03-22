@@ -11,6 +11,6 @@ public class TaxiTimeStampExtractor implements TimestampExtractor {
     @Override
     public long extract(ConsumerRecord<Object, Object> consumerRecord) {
         GenericRecord value = (GenericRecord) consumerRecord.value();
-        return (Long) value.get("tpep_pickup_datetime");
+        return ((Integer) value.get("tpep_pickup_datetime")).longValue();
     }
 }

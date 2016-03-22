@@ -99,26 +99,53 @@ create table weather_raw (
 .mode csv
 .import central_park_weather.csv weather_raw
 
-create table weather AS SELECT
+create table weather(
+    usaf INTEGER NOT NULL,
+    wban INTEGER NOT NULL,
+    ts INTEGER NOT NULL,
+    wind_direction INTEGER,
+    wind_speed INTEGER,
+    wind_gust INTEGER,
+    ceiling INTEGER,
+    SKC CHAR(3),
+    visibility INTEGER,
+    temperature INTEGER,
+    dewpoint INTEGER,
+    slp float,
+    alt float,
+    stp float,
+    max_temperature INTEGER,
+    min_temperature INTEGER,
+    precipitation_1_hour float,
+    precipitiaton_6_hours float,
+    precipitation_24_hours float,
+    precipitation_xx float,
+    sd INTEGER,
+    uid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+    )
+;
+
+insert into weather SELECT
     usaf, wban, ts,
-    CAST(NULLIF(DIR,'')   AS NUMERIC) wind_direction,
-    CAST(NULLIF(SPD  ,'') AS NUMERIC) wind_speed,
-    CAST(NULLIF(GUS,'')   AS NUMERIC) wind_gust,
-    CAST(NULLIF(CLG,'')   AS NUMERIC) ceiling,
+    CAST(NULLIF(DIR,'')   AS INTEGER),
+    CAST(NULLIF(SPD  ,'') AS INTEGER),
+    CAST(NULLIF(GUS,'')   AS INTEGER),
+    CAST(NULLIF(CLG,'')   AS INTEGER),
     NULLIF(SKC,'') SKC,
-    CAST(NULLIF(VSB,'')  AS NUMERIC) visibility,
-    CAST(NULLIF(TEMP,'') AS NUMERIC) temperature,
-    CAST(NULLIF(DEWP,'') AS NUMERIC) dewpoint,
-    CAST(NULLIF(SLP,'')  AS NUMERIC) slp,
-    CAST(NULLIF(ALT,'')  AS NUMERIC) alt,
-    CAST(NULLIF(STP,'')  AS NUMERIC) stp,
-    CAST(NULLIF(MAXT,'') AS NUMERIC) max_temperature,
-    CAST(NULLIF(MINT,'') AS NUMERIC) min_temperature,
-    NULLIF(PCP01,'') precipitation_1_hour,
-    NULLIF(PCP06,'') precipitiaton_6_hours,
-    NULLIF(PCP24,'') precipitation_24_hours,
-    NULLIF(PCPXX,'') precipitation_xx,
-    NULLIF(SD,'') sd
+    CAST(NULLIF(VSB,'')  AS INTEGER),
+    CAST(NULLIF(TEMP,'') AS INTEGER),
+    CAST(NULLIF(DEWP,'') AS INTEGER),
+    CAST(NULLIF(SLP,'')  AS FLOAT),
+    CAST(NULLIF(ALT,'')  AS FLOAT),
+    CAST(NULLIF(STP,'')  AS FLOAT),
+    CAST(NULLIF(MAXT,'') AS INTEGER),
+    CAST(NULLIF(MINT,'') AS INTEGER),
+    CAST(NULLIF(PCP01,'') AS FLOAT),
+    CAST(NULLIF(PCP06,'') AS FLOAT),
+    CAST(NULLIF(PCP24,'') AS FLOAT),
+    CAST(NULLIF(PCPXX,'') AS FLOAT),
+    CAST (NULLIF(SD,'') AS INTEGER),
+    rowid
 FROM weather_raw;
 
 drop table weather_raw;

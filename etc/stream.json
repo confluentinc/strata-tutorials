@@ -1,0 +1,12 @@
+{
+ "job.id": "taxi.streaming.job",
+ "bootstrap.servers":"localhost:9092",
+ "zookeeper.connect":"localhost:2181",
+  "schema.registry.url":"http://localhost:8081",
+ "key.serializer" : "io.confluent.examples.streams.utils.GenericAvroSerializer",
+ "key.deserializer" : "io.confluent.examples.streams.utils.GenericAvroDeserializer",
+ "value.serializer" : "io.confluent.examples.streams.utils.GenericAvroSerializer",
+ "value.deserializer" : "io.confluent.examples.streams.utils.GenericAvroDeserializer",
+ "timestamp.extractor" : "io.confluent.strata.TaxiTimeStampExtractor",
+ "neighborhoods" : ["/vagrant/data/ZillowNeighborhoods-NY", "/vagrant/data/ZillowNeighborhoods-NJ"]
+}

@@ -118,6 +118,6 @@ cp /vagrant/clean_up.sh /home/vagrant
 chown vagrant:vagrant /home/vagrant/clean_up.sh
 chmod +x /home/vagrant/clean_up.sh
 
-cp /vagrant/*.sql /home/vagrant
-chown vagrant:vagrant /home/vagrant/*.sql
+#cp /vagrant/*.sql /home/vagrant
+#chown vagrant:vagrant /home/vagrant/*.sql
 

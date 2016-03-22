@@ -35,12 +35,12 @@ public class ReverseGeocoder implements ValueMapper<GenericRecord, GenericRecord
     String longitudeKey = null;
     String locationNameKey = null;
 
-    public ReverseGeocoder(Collection<File> shapefiles)  {
+    public ReverseGeocoder(Collection<String> shapefiles)  {
         super();
         shapefiles.forEach(file -> loadShapeFile(file));
     }
 
-    public ReverseGeocoder(Collection<File> shapefiles, String initialLatitudeKey,
+    public ReverseGeocoder(Collection<String> shapefiles, String initialLatitudeKey,
                            String initialLongitudeKey, String initialLocationName)  {
         super();
         latitudeKey = initialLatitudeKey;
@@ -49,11 +49,14 @@ public class ReverseGeocoder implements ValueMapper<GenericRecord, GenericRecord
         shapefiles.forEach(file -> loadShapeFile(file));
     }
 
-    public void loadShapeFile(File shapefile)  {
+    public void loadShapeFile(String shapefileName)  {
         try {
+            File shapefile = new File(shapefileName);
             Map<String, Object> shapefileParams = Maps.newHashMap();
             shapefileParams.put("url", shapefile.toURI().toURL());
             DataStore dataStore = DataStoreFinder.getDataStore(shapefileParams);
+            if (dataStore == null)
+                throw new RuntimeException("couldn't load the damn data store: " + shapefile);
             String typeName = dataStore.getTypeNames()[0];
             FeatureSource<SimpleFeatureType, SimpleFeature> source = dataStore.getFeatureSource(typeName);
             Filter filter = Filter.INCLUDE;
@@ -67,6 +70,7 @@ public class ReverseGeocoder implements ValueMapper<GenericRecord, GenericRecord
                             geoInfo);
                 }
             }
+            System.err.printf("loaded shapefile %s\n", shapefile);
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
@@ -74,11 +78,11 @@ public class ReverseGeocoder implements ValueMapper<GenericRecord, GenericRecord
 
     private GeometryFactory geometryFactory = new GeometryFactory();
 
-    public GeoInfo findGeoInfoForPoint(double x, double y) {
+    public GeoInfo findGeoInfoForPoint(double y, double x) {
         Coordinate coordinate = new Coordinate(x,y);
         Geometry geometry = geometryFactory.createPoint(coordinate);
         List<GeoInfo> candidates =  qt.query(new Envelope(coordinate));
-        System.err.printf("Looking at a list of %d candidates\n", candidates.size());
+        // System.err.printf("Looking at a list of %d candidates for coordinate %s\n", candidates.size(), coordinate);
         for (GeoInfo candidate: candidates) {
             if (candidate.multiPolygon.contains(geometry))
                 return candidate;
@@ -86,11 +90,11 @@ public class ReverseGeocoder implements ValueMapper<GenericRecord, GenericRecord
         return null;
     }
 
-    public List<GeoInfo> findAllGeoInfoForPoint(double x, double y) {
+    public List<GeoInfo> findAllGeoInfoForPoint(double y, double x) {
         Coordinate coordinate = new Coordinate(x,y);
         Geometry geometry = geometryFactory.createPoint(coordinate);
         List<GeoInfo> candidates =  qt.query(new Envelope(coordinate));
-        System.err.printf("Looking at a list of %d candidates\n", candidates.size());
+        // System.err.printf("Looking at a list of %d candidates\n", candidates.size());
         List<GeoInfo> stuffFound = Lists.newArrayList();
         for (GeoInfo candidate: candidates) {
             if (candidate.multiPolygon.contains(geometry))
@@ -104,23 +108,25 @@ public class ReverseGeocoder implements ValueMapper<GenericRecord, GenericRecord
     @Override
     public GenericRecord apply(GenericRecord genericRecord) {
         if (schema == null) {
-            // hack to copy the schema
-            String oldSchemaString = schema.toString();
-            schema = (new Schema.Parser()).parse(oldSchemaString);
-            List<Schema.Field> fields = Lists.newArrayList(schema.getFields());
-            fields.add(new Schema.Field(
-                    locationNameKey,
-                    Schema.create(Schema.Type.STRING),
-                    "value from reverse lookup",
-                    null));
-            schema.setFields(fields);
+            schema = AvroUtils.addFieldsToSchema(
+                    genericRecord.getSchema(),
+                    Lists.newArrayList(new Schema.Field(
+                            locationNameKey,
+                            Schema.createUnion(
+                                    Lists.newArrayList(Schema.create(Schema.Type.STRING), Schema.create(Schema.Type.NULL))),
+                            null,
+                            null)));
         }
 
         Double latitude = (Double) genericRecord.get(latitudeKey);
         Double longitude = (Double) genericRecord.get(longitudeKey);
-        String neighborhood =findGeoInfoForPoint(latitude, longitude).name;
-        GenericRecord newRecord = (GenericRecord) GenericData.get().newRecord((Object) genericRecord, schema);
+        GeoInfo geoInfo = findGeoInfoForPoint(latitude, longitude);
+        String neighborhood = null;
+        if (geoInfo != null)
+             neighborhood = findGeoInfoForPoint(latitude, longitude).name;
+        GenericData.Record newRecord = AvroUtils.copyRecord(genericRecord, schema);
         newRecord.put(locationNameKey, neighborhood);
+        System.err.printf("%f %f => %s\n", latitude, longitude, neighborhood==null?"null":neighborhood);
         return newRecord;
     }
 }

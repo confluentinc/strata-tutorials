@@ -10,10 +10,10 @@ import java.io.IOException;
  */
 public class DoStuff {
 
-    public static void main(String argv[])  {
+    static final String nyShapefile = "data/ZillowNeighborhoods-NY/ZillowNeighborhoods-NY.shp";
+    static final String njShapefile = "data/ZillowNeighborhoods-NJ/ZillowNeighborhoods-NJ.shp";
 
-        File nyShapefile = new File ("data/ZillowNeighborhoods-NY/ZillowNeighborhoods-NY.shp");
-        File njShapefile = new File ("data/ZillowNeighborhoods-NJ/ZillowNeighborhoods-NJ.shp");
+    public static void main(String argv[])  {
 
         ReverseGeocoder reverseGeocoder =
                 new ReverseGeocoder(

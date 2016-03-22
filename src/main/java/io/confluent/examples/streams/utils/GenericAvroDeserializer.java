@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class GenericAvroDeserializer implements Deserializer<GenericRecord> {
 
-    KafkaAvroDeserializer inner;
+    KafkaAvroDeserializer inner = new KafkaAvroDeserializer();
 
     /**
      * Constructor used by Kafka Streams.
