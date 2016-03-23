@@ -1,4 +1,4 @@
-package io.confluent.strata;
+package io.confluent.strata.geo;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -16,13 +16,11 @@ public class GeoUtils {
         double minY = 180.0;
         double maxY = -180.0;
         for (Coordinate coordinate : multiPolygon.getCoordinates()) {
-            //System.err.printf("\t%f %f\n", coordinate.x, coordinate.y);
             minX = Math.min(minX, coordinate.x);
             maxX = Math.max(maxX, coordinate.x);
             minY = Math.min(minY, coordinate.y);
             maxY = Math.max(maxY, coordinate.y);
         }
-        //System.err.printf("%f, %f, %f, %f\n", minX, maxX, minY, maxY);
         return new Envelope(minX, maxX, minY, maxY);
     }
 }

@@ -14,9 +14,6 @@ public class TaxiTimeStampExtractor implements TimestampExtractor {
         Integer fromTaxiData = (Integer) value.get("tpep_pickup_datetime");
         if (fromTaxiData != null)
             return fromTaxiData.longValue() * 1000L;
-        Integer fromWeatherData = (Integer) value.get("ts");
-        if (fromWeatherData != null)
-            return fromWeatherData * 1000L;
         System.err.printf("issue while extracting timestamp from %s\n", consumerRecord);
         return System.currentTimeMillis();
     }

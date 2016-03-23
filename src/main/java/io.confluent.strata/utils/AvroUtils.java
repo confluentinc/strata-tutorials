@@ -14,7 +14,6 @@ import java.util.List;
 public class AvroUtils {
 
     public static Schema addFieldsToSchema(Schema oldschema, List<Schema.Field> moreFields) {
-        //System.err.printf("addFieldsToSchema called with old schema of type %s\n", oldschema.getType());
         Schema newSchema = Schema.createRecord(
                 oldschema.getName(), oldschema.getDoc(), oldschema.getNamespace(), oldschema.isError()
         );
@@ -27,9 +26,6 @@ public class AvroUtils {
                             field.doc(),
                             field.defaultValue(),
                             field.order()));
-        //for (Schema.Field f : newFields)
-        //    System.err.printf("\t%s %s %s %d\n", f.name(), f.order(), f.schema(), f.pos());
-
         newSchema.setFields(newFields);
         return newSchema;
     }

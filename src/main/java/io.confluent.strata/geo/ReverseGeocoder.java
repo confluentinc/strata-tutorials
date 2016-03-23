@@ -1,4 +1,4 @@
-package io.confluent.strata;
+package io.confluent.strata.geo;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
