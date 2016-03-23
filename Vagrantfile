@@ -9,6 +9,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     deb.vm.provision "shell", path: "vagrant/deb.sh"
   end
 
+  config.vm.network "forwarded_port", guest: 2181, host: 2181
+  config.vm.network "forwarded_port", guest: 9092, host: 9092
+  config.vm.network "forwarded_port", guest: 8081, host: 8081
+
   config.vm.synced_folder "~/.gnupg", "/root/.gnupg", owner: "root", group: "root"
 
   config.vm.provider "virtualbox" do |vb|

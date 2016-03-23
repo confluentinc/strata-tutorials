@@ -8,6 +8,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.index.strtree.STRtree;
+import io.confluent.strata.utils.AvroUtils;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -37,7 +38,9 @@ public class ReverseGeocoder implements ValueMapper<GenericRecord, GenericRecord
 
     public ReverseGeocoder(Collection<String> shapefiles)  {
         super();
-        shapefiles.forEach(file -> loadShapeFile(file));
+        // shapefiles.forEach(file -> loadShapeFile(file));
+        for (String shapeFile : shapefiles)
+            loadShapeFile(shapeFile);
     }
 
     public ReverseGeocoder(Collection<String> shapefiles, String initialLatitudeKey,
@@ -46,7 +49,10 @@ public class ReverseGeocoder implements ValueMapper<GenericRecord, GenericRecord
         latitudeKey = initialLatitudeKey;
         longitudeKey = initialLongitudeKey;
         locationNameKey = initialLocationName;
-        shapefiles.forEach(file -> loadShapeFile(file));
+        //shapefiles.forEach(file -> loadShapeFile(file));
+        for (String shapeFile : shapefiles)
+            loadShapeFile(shapeFile);
+
     }
 
     public void loadShapeFile(String shapefileName)  {
@@ -126,7 +132,7 @@ public class ReverseGeocoder implements ValueMapper<GenericRecord, GenericRecord
              neighborhood = findGeoInfoForPoint(latitude, longitude).name;
         GenericData.Record newRecord = AvroUtils.copyRecord(genericRecord, schema);
         newRecord.put(locationNameKey, neighborhood);
-        System.err.printf("%f %f => %s\n", latitude, longitude, neighborhood==null?"null":neighborhood);
+        // System.err.printf("%f %f => %s\n", latitude, longitude, neighborhood==null?"null":neighborhood);
         return newRecord;
     }
 }

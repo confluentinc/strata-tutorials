@@ -7,6 +7,9 @@ import java.io.IOException;
 
 /**
  * Created by jadler on 3/17/16.
+ *
+ * a couple examples to test the geocoding logic
+ *
  */
 public class DoStuff {
 

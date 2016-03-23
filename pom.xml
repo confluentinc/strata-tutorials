@@ -12,13 +12,14 @@
 
     <repositories>
         <repository>
+            <id>confluent</id>
+            <url>http://packages.confluent.io/maven/</url>
+        </repository>
+        <repository>
             <id>geotools</id>
             <url>http://download.osgeo.org/webdav/geotools/</url>
         </repository>
-            <repository>
-                <id>confluent</id>
-                <url>http://packages.confluent.io/maven/</url>
-            </repository>
+
     </repositories>
 
     <dependencies>
@@ -53,6 +54,12 @@
             <artifactId>kafka-clients</artifactId>
             <version>0.9.1.0-cp1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_2.11</artifactId>
+            <version>0.9.1.0-cp1</version>
+        </dependency>
+
 
     </dependencies>
 
@@ -72,8 +79,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
         </plugins>
