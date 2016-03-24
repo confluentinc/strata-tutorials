@@ -36,6 +36,10 @@ On the host machine:
     mvn assembly:assembly
     vagrant up
     vagrant ssh
+    
+And if you don't have a ```~/.gnupg``` folder...
+
+    mkdir ~/.gnupg
 
 Then on the vm
 
