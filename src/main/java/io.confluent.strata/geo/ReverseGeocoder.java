@@ -12,6 +12,8 @@ import io.confluent.strata.utils.AvroUtils;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.geotools.data.*;
 import org.geotools.feature.FeatureCollection;
@@ -29,33 +31,25 @@ import java.util.Map;
 /**
  * Created by jadler on 3/17/16.
  */
-public class ReverseGeocoder implements ValueMapper<GenericRecord, GenericRecord>  {
+public class ReverseGeocoder implements KeyValueMapper<GenericRecord, GenericRecord, KeyValue<String, GenericRecord>> {
 
     SpatialIndex qt = new STRtree();
     String latitudeKey = null;
     String longitudeKey = null;
     String locationNameKey = null;
 
-    public ReverseGeocoder(Collection<String> shapefiles)  {
-        super();
-        // shapefiles.forEach(file -> loadShapeFile(file));
-        for (String shapeFile : shapefiles)
-            loadShapeFile(shapeFile);
-    }
-
     public ReverseGeocoder(Collection<String> shapefiles, String initialLatitudeKey,
-                           String initialLongitudeKey, String initialLocationName)  {
+                           String initialLongitudeKey, String initialLocationName) {
         super();
         latitudeKey = initialLatitudeKey;
         longitudeKey = initialLongitudeKey;
         locationNameKey = initialLocationName;
-        //shapefiles.forEach(file -> loadShapeFile(file));
         for (String shapeFile : shapefiles)
             loadShapeFile(shapeFile);
 
     }
 
-    public void loadShapeFile(String shapefileName)  {
+    public void loadShapeFile(String shapefileName) {
         try {
             File shapefile = new File(shapefileName);
             Map<String, Object> shapefileParams = Maps.newHashMap();
@@ -85,11 +79,11 @@ public class ReverseGeocoder implements ValueMapper<GenericRecord, GenericRecord
     private GeometryFactory geometryFactory = new GeometryFactory();
 
     public GeoInfo findGeoInfoForPoint(double y, double x) {
-        Coordinate coordinate = new Coordinate(x,y);
+        Coordinate coordinate = new Coordinate(x, y);
         Geometry geometry = geometryFactory.createPoint(coordinate);
-        List<GeoInfo> candidates =  qt.query(new Envelope(coordinate));
+        List<GeoInfo> candidates = qt.query(new Envelope(coordinate));
         // System.err.printf("Looking at a list of %d candidates for coordinate %s\n", candidates.size(), coordinate);
-        for (GeoInfo candidate: candidates) {
+        for (GeoInfo candidate : candidates) {
             if (candidate.multiPolygon.contains(geometry))
                 return candidate;
         }
@@ -97,12 +91,12 @@ public class ReverseGeocoder implements ValueMapper<GenericRecord, GenericRecord
     }
 
     public List<GeoInfo> findAllGeoInfoForPoint(double y, double x) {
-        Coordinate coordinate = new Coordinate(x,y);
+        Coordinate coordinate = new Coordinate(x, y);
         Geometry geometry = geometryFactory.createPoint(coordinate);
-        List<GeoInfo> candidates =  qt.query(new Envelope(coordinate));
+        List<GeoInfo> candidates = qt.query(new Envelope(coordinate));
         // System.err.printf("Looking at a list of %d candidates\n", candidates.size());
         List<GeoInfo> stuffFound = Lists.newArrayList();
-        for (GeoInfo candidate: candidates) {
+        for (GeoInfo candidate : candidates) {
             if (candidate.multiPolygon.contains(geometry))
                 stuffFound.add(candidate);
         }
@@ -112,10 +106,10 @@ public class ReverseGeocoder implements ValueMapper<GenericRecord, GenericRecord
     Schema schema = null;
 
     @Override
-    public GenericRecord apply(GenericRecord genericRecord) {
+    public KeyValue<String, GenericRecord> apply(GenericRecord key, GenericRecord value) {
         if (schema == null) {
             schema = AvroUtils.addFieldsToSchema(
-                    genericRecord.getSchema(),
+                    value.getSchema(),
                     Lists.newArrayList(new Schema.Field(
                             locationNameKey,
                             Schema.createUnion(
@@ -124,15 +118,16 @@ public class ReverseGeocoder implements ValueMapper<GenericRecord, GenericRecord
                             null)));
         }
 
-        Double latitude = (Double) genericRecord.get(latitudeKey);
-        Double longitude = (Double) genericRecord.get(longitudeKey);
+        Double latitude = (Double) value.get(latitudeKey);
+        Double longitude = (Double) value.get(longitudeKey);
         GeoInfo geoInfo = findGeoInfoForPoint(latitude, longitude);
         String neighborhood = null;
         if (geoInfo != null)
-             neighborhood = findGeoInfoForPoint(latitude, longitude).name;
-        GenericData.Record newRecord = AvroUtils.copyRecord(genericRecord, schema);
-        newRecord.put(locationNameKey, neighborhood);
+            neighborhood = findGeoInfoForPoint(latitude, longitude).name;
+        //GenericData.Record newRecord = AvroUtils.copyRecord(value, schema);
+        //newRecord.put(locationNameKey, neighborhood);
         // System.err.printf("%f %f => %s\n", latitude, longitude, neighborhood==null?"null":neighborhood);
-        return newRecord;
+        return KeyValue.pair(neighborhood!=null?neighborhood:"", value);
     }
+
 }
