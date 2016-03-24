@@ -9,14 +9,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     deb.vm.provision "shell", path: "vagrant/deb.sh"
   end
 
-  config.vm.network "forwarded_port", guest: 2181, host: 2181
-  config.vm.network "forwarded_port", guest: 9092, host: 9092
-  config.vm.network "forwarded_port", guest: 8081, host: 8081
+
+  # Optional: forward ports from VM to native machine so you can run the streaming job locally; uncomment
+  # the next three lines if you want this
+
+  # config.vm.network "forwarded_port", guest: 2181, host: 2181
+  # config.vm.network "forwarded_port", guest: 9092, host: 9092
+  # config.vm.network "forwarded_port", guest: 8081, host: 8081
 
   config.vm.synced_folder "~/.gnupg", "/root/.gnupg", owner: "root", group: "root"
 
   config.vm.provider "virtualbox" do |vb|
-    vb.customize ["modifyvm", :id, "--memory", "4096"]
+    # change to 4096 if you're running hive
+    vb.customize ["modifyvm", :id, "--memory", "2048"]
   end
 
     # use vagrant-cachier if available (common package cache)

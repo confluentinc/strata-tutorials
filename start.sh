@@ -5,18 +5,21 @@ set -e
 echo "Starting Hadoop"
 hadoop namenode -format -force -nonInteractive
 hadoop-daemon.sh start namenode
+# Why is this line repeated?
 hadoop-daemon.sh start datanode
 
 # Starting Confluent Platform
-echo "Starting Confluent Platform"
+echo "Starting Zookeeper"
 zookeeper-server-start /mnt/etc/zookeeper.properties 1>> /mnt/logs/zk.log 2>>/mnt/logs/zk.log &
 sleep 5
 
+echo "Starting Kafka"
 kafka-server-start /mnt/etc/server.properties 1>> /mnt/logs/kafka.log 2>> /mnt/logs/kafka.log &
 sleep 5
 
+echo "Starting Schema Registry"
 schema-registry-start /mnt/etc/schema-registry.properties 1>> /mnt/logs/schema-registry.log 2>> /mnt/logs/schema-registry.log &
-sleep 5
+
 # Starting Hive Metastore
-echo "Starting Hive metastore"
-hive --service metastore 1>> /mnt/logs/metastore.log 2>> /mnt/logs/metastore.log &
+echo "Not starting Hive metastore. Run start_hive.sh if you want it."
+# hive --service metastore 1>> /mnt/logs/metastore.log 2>> /mnt/logs/metastore.log &
