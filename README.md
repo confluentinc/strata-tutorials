@@ -49,7 +49,7 @@ To view stream output
 
     # you can run hive, look at tables, and select data
     # or you can look at data in topics
-    bash /vagrant/scripts/show-topic.bash geocodedRides
+    bash /vagrant/scripts/show_topic.bash geocodedRides
 
 
 Old directions for getting the data

@@ -9,6 +9,7 @@ hadoop-daemon.sh start datanode
 
 # Starting Confluent Platform
 echo "Starting Confluent Platform"
+export KAFKA_HEAP_OPTS="-Xmx128M -Xms128M"
 zookeeper-server-start /mnt/etc/zookeeper.properties 1>> /mnt/logs/zk.log 2>>/mnt/logs/zk.log &
 sleep 5
 

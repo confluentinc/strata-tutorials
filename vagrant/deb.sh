@@ -83,11 +83,11 @@ if [ ! -e confluent ]; then
     popd
 
     tar xvzf /tmp/vagrant-downloads/confluent-2.1.0-alpha1-2.11.7.tar.gz
+    #ln -s /opt/confluent-2.1.0-alpha1 /opt/confluent
+    mv /opt/confluent-2.1.0-alpha1 /opt/confluent
+    chown -R vagrant:vagrant /opt/confluent
+    #mkdir /opt/confluent-2.1.0-alpha1/logs
 fi
-#ln -s /opt/confluent-2.1.0-alpha1 /opt/confluent
-mv /opt/confluent-2.1.0-alpha1 /opt/confluent
-chown -R vagrant:vagrant /opt/confluent
-#mkdir /opt/confluent-2.1.0-alpha1/logs
 popd
 
 # Copy .profile and change owner to vagrant
