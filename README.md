@@ -24,8 +24,13 @@ it out later)
 Getting the data
 ----------------
 
-Run the script in ```scripts/get_taxi_rides.bash```. This will download
-the taxi data, clean it, and load it into a sqlite database
+If you want to rebuild the data, run the script in 
+```scripts/get_taxi_rides.bash```. This will download the taxi data, 
+clean it, load it into a sqlite database, sample 100k random taxi rides,
+and shrink  the DB. You can hack this file to include more data.
+
+But there is a small (100k) sample of lines from that database in the
+repo already. You can just use that one.
 
 Building and running things
 ===========================

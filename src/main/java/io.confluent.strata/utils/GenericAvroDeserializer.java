@@ -25,6 +25,7 @@ import java.util.Map;
 public class GenericAvroDeserializer implements Deserializer<GenericRecord> {
 
     KafkaAvroDeserializer inner = new KafkaAvroDeserializer();
+    private boolean notConfigured = true;
 
     /**
      * Constructor used by Kafka Streams.
@@ -43,11 +44,16 @@ public class GenericAvroDeserializer implements Deserializer<GenericRecord> {
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
-        inner.configure(configs, isKey);
+        inner.configure(configs, isKey);notConfigured = false;
     }
 
     @Override
     public GenericRecord deserialize(String s, byte[] bytes) {
+        if (notConfigured) {
+            System.err.print("WTF? GenericAvroDeserializer not configured\n");
+            System.err.flush();
+            throw new RuntimeException("WTF? GenericAvroDeserializer not configured");
+        }
         return (GenericRecord) inner.deserialize(s, bytes);
     }
 

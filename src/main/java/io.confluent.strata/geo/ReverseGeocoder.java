@@ -120,14 +120,16 @@ public class ReverseGeocoder implements KeyValueMapper<GenericRecord, GenericRec
 
         Double latitude = (Double) value.get(latitudeKey);
         Double longitude = (Double) value.get(longitudeKey);
-        GeoInfo geoInfo = findGeoInfoForPoint(latitude, longitude);
         String neighborhood = null;
-        if (geoInfo != null)
-            neighborhood = findGeoInfoForPoint(latitude, longitude).name;
-        //GenericData.Record newRecord = AvroUtils.copyRecord(value, schema);
-        //newRecord.put(locationNameKey, neighborhood);
-        // System.err.printf("%f %f => %s\n", latitude, longitude, neighborhood==null?"null":neighborhood);
-        return KeyValue.pair(neighborhood!=null?neighborhood:"", value);
+        if (latitude != 0) {
+            GeoInfo geoInfo = findGeoInfoForPoint(latitude, longitude);
+            if (geoInfo != null)
+                neighborhood = findGeoInfoForPoint(latitude, longitude).name;
+            //GenericData.Record newRecord = AvroUtils.copyRecord(value, schema);
+            //newRecord.put(locationNameKey, neighborhood);
+            // System.err.printf("%f %f => %s\n", latitude, longitude, neighborhood==null?"null":neighborhood);
+        }
+        return KeyValue.pair(neighborhood!=null?neighborhood:"unknown", value);
     }
 
 }

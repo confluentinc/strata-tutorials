@@ -25,6 +25,7 @@ import java.util.Map;
 public class GenericAvroSerializer implements Serializer<GenericRecord> {
 
     KafkaAvroSerializer inner = new KafkaAvroSerializer();
+    private boolean notConfigured = true;
 
     /**
      * Constructor used by Kafka Streams.
@@ -40,10 +41,16 @@ public class GenericAvroSerializer implements Serializer<GenericRecord> {
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
         inner.configure(configs, isKey);
+        notConfigured = false;
     }
 
     @Override
     public byte[] serialize(String topic, GenericRecord record) {
+        if (notConfigured) {
+            System.err.print("WTF? GenericAvroSerializer not configured\n");
+            System.err.flush();
+            throw new RuntimeException("WTF? GenericAvroSerializer not configured");
+        }
         return inner.serialize(topic, record);
     }
 

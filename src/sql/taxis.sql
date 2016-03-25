@@ -68,11 +68,11 @@ insert into yellow_cab_trips
     total_amount,
     ROWID
   from yellow_cab_trips_raw
+  ORDER BY random()
   LIMIT 100000
   ;
 
 drop table yellow_cab_trips_raw;
-
 
 create table weather_raw (
       USAF NUMERIC(6),
@@ -151,6 +151,6 @@ insert into weather SELECT
 FROM weather_raw;
 
 drop table weather_raw;
-
+VACUUM;
 
 

@@ -53,10 +53,8 @@ public class TaxiStream {
         Deserializer<Long> longDeserializer = new LongDeserializer();
         Serializer<Long> longSerializer = new LongSerializer();
 
-
         Deserializer<Windowed<String>> windowedStringDeserializer = new WindowedStringDeserializer();
         Serializer<Windowed<String>> windowedStringSerializer = new WindowedStringSerializer();
-
 
         // Load in the raw data
         KStream<GenericRecord, GenericRecord> taxiRides =
@@ -73,12 +71,11 @@ public class TaxiStream {
         // Now compute some metrics
         final long oneDay = 24 * 60 * 60 * 1000;
         KTable<Windowed<String>, Long> cabRidesPerDay = geocodedRides.countByKey(
-                HoppingWindows.of("days").every(oneDay),
+                HoppingWindows.of("days").every(oneDay).until(oneDay*365),
                 stringSerializer, longSerializer,
                 stringDeserializer, longDeserializer);
 
         cabRidesPerDay.to("countsByDay",windowedStringSerializer,longSerializer);
-
 
         // schema for average calculation
         final Schema metricAggSchema = SchemaBuilder
@@ -89,6 +86,7 @@ public class TaxiStream {
                 .endRecord();
 
         final long oneHour = 60 * 60 * 1000;
+
         KTable<Windowed<String>, GenericRecord> movingAverageDistance = geocodedRides.aggregateByKey(
                 new Initializer<GenericRecord>() {
                     @Override
@@ -112,10 +110,11 @@ public class TaxiStream {
                         return aggregate;
                     }
                 },
-                TumblingWindows.of("movingHour").with(oneHour),
+                TumblingWindows.of("movingHour").with(oneHour).until(oneDay*365),
                 stringSerializer, genericRecordSerializer, stringDeserializer, genericRecordDeserializer);
 
         movingAverageDistance.to("movingAvgDistance",windowedStringSerializer,genericRecordSerializer);
+
 
         // chain in the config file
         KafkaStreams streams = new KafkaStreams(builder, config);

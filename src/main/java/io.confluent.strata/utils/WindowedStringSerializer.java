@@ -23,9 +23,9 @@ public class WindowedStringSerializer implements Serializer<Windowed<String>> {
         StringBuilder dataString = new StringBuilder();
         dataString.append(data.value());
         dataString.append(",");
-        dataString.append(data.window().start());
+        dataString.append( new Long(data.window().start()).toString() );
         dataString.append(",");
-        dataString.append(data.window().end());
+        dataString.append( new Long(data.window().end()).toString() );
         return stringSerializer.serialize(topic, dataString.toString());
     }
 
