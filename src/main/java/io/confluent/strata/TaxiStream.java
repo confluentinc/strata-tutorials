@@ -5,13 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.confluent.strata.geo.ReverseGeocoder;
 import io.confluent.strata.utils.GenericAvroDeserializer;
 import io.confluent.strata.utils.GenericAvroSerializer;
-import io.confluent.strata.utils.WindowedStringDeserializer;
 import io.confluent.strata.utils.WindowedStringSerializer;
-import org.apache.avro.Schema;
-import org.apache.avro.SchemaBuilder;
-import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.*;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
@@ -30,97 +25,52 @@ public class TaxiStream {
 
     public static void main(String args[]) throws IOException {
 
+        // Load the settings from an external JSON file. (This is straightforward using Jackson.)
+        // We like to keep settings in a separate file from the code. This makes it easy to move
+        // your code between systems, or tweak settings in production.)
         ObjectMapper mapper = new ObjectMapper();
         System.err.printf("reading from file %s\n", args[0]);
-        Map<String,Object> propertyFile= mapper.readValue(new File(args[0]),
-                new TypeReference<Map<String,Object>>() {});
+        Map<String, Object> propertyFile =
+                mapper.readValue(
+                        new File(args[0]), new TypeReference<Map<String, Object>>() {
+                        });
         Properties settings = new Properties();
-        for (Map.Entry<String,Object> property: propertyFile.entrySet()) {
+        for (Map.Entry<String, Object> property : propertyFile.entrySet()) {
             settings.setProperty(property.getKey(), property.getValue().toString());
         }
 
-        StreamsConfig config = new StreamsConfig(settings);
-
-        KStreamBuilder builder = new KStreamBuilder();
-
-        Deserializer<GenericRecord> genericRecordDeserializer = new GenericAvroDeserializer();
+        // Define and configure serializers and deserializers
+        final Deserializer<GenericRecord> genericRecordDeserializer = new GenericAvroDeserializer();
         genericRecordDeserializer.configure(propertyFile, true);
-        Serializer<GenericRecord> genericRecordSerializer = new GenericAvroSerializer();
+        final Serializer<GenericRecord> genericRecordSerializer = new GenericAvroSerializer();
         genericRecordSerializer.configure(propertyFile, true);
+        final Deserializer<String> stringDeserializer = new StringDeserializer();
+        final Serializer<String> stringSerializer = new StringSerializer();
+        final Deserializer<Long> longDeserializer = new LongDeserializer();
+        final Serializer<Long> longSerializer = new LongSerializer();
+        final Serializer<Windowed<String>> windowedStringSerializer = new WindowedStringSerializer();
 
-        Deserializer<String> stringDeserializer = new StringDeserializer();
-        Serializer<String> stringSerializer = new StringSerializer();
+        // 1. Create (or load) the streams configuration
 
-        Deserializer<Long> longDeserializer = new LongDeserializer();
-        Serializer<Long> longSerializer = new LongSerializer();
 
-        Deserializer<Windowed<String>> windowedStringDeserializer = new WindowedStringDeserializer();
-        Serializer<Windowed<String>> windowedStringSerializer = new WindowedStringSerializer();
+        // 2. Create a KStreamBuilder object
 
-        // Load in the raw data
-        KStream<GenericRecord, GenericRecord> taxiRides =
-                builder.stream(genericRecordDeserializer, genericRecordDeserializer, "taxis_jdbc_yellow_cab_trips");
 
-        // Reverse-geocode the pickup location and write out to a kafka topic as an intermediate step
+        // 3. Tell your streams job where to consume data from
+
+        // 4. Transform the data
         List<String> neighborhoods = (List<String>) propertyFile.get("neighborhoods");
-        KStream<String, GenericRecord> geocodedRides = taxiRides
-                .map(new ReverseGeocoder(neighborhoods, "pickup_latitude", "pickup_longitude", "neighborhood"))
-                .through("geocodedRides",
-                    stringSerializer, genericRecordSerializer,
-                    stringDeserializer, genericRecordDeserializer);
 
-        // Now compute some metrics
+        // 9. Count messages by key
         final long oneDay = 24 * 60 * 60 * 1000;
-        KTable<Windowed<String>, Long> cabRidesPerDay = geocodedRides.countByKey(
-                HoppingWindows.of("days").every(oneDay).until(oneDay*365),
-                stringSerializer, longSerializer,
-                stringDeserializer, longDeserializer);
 
-        cabRidesPerDay.to("countsByDay",windowedStringSerializer,longSerializer);
+        // 10. Write the results out to another stream.
 
-        // schema for average calculation
-        final Schema metricAggSchema = SchemaBuilder
-                .record("metricAgg")
-                .fields()
-                .requiredLong("count")
-                .requiredDouble("total")
-                .endRecord();
+        // 6. Start the streams job
 
-        final long oneHour = 60 * 60 * 1000;
-
-        KTable<Windowed<String>, GenericRecord> movingAverageDistance = geocodedRides.aggregateByKey(
-                new Initializer<GenericRecord>() {
-                    @Override
-                    public GenericRecord apply() {
-                        GenericRecord newRecord = (GenericRecord) GenericData.get().newRecord(null, metricAggSchema);
-                        newRecord.put("count", 0L);
-                        newRecord.put("total", 0.0);
-                        return newRecord;
-                    }
-                },
-                new Aggregator<String, GenericRecord, GenericRecord>() {
-                    @Override
-                    public GenericRecord apply(String aggKey, GenericRecord value, GenericRecord aggregate) {
-                        Double distanceFromRecord = (Double) value.get("trip_distance");
-                        Long count = (Long) aggregate.get("count");
-                        Double total = (Double) aggregate.get("total");
-                        count += 1;
-                        total += distanceFromRecord;
-                        aggregate.put("count", count);
-                        aggregate.put("total", total);
-                        return aggregate;
-                    }
-                },
-                TumblingWindows.of("movingHour").with(oneHour).until(oneDay*365),
-                stringSerializer, genericRecordSerializer, stringDeserializer, genericRecordDeserializer);
-
-        movingAverageDistance.to("movingAvgDistance",windowedStringSerializer,genericRecordSerializer);
-
-
-        // chain in the config file
-        KafkaStreams streams = new KafkaStreams(builder, config);
-        streams.start();
-
+        // Set a handler for uncaught exceptions within the framework:
+        // uncomment this section if the KStreams object is called "streams", or rename then uncomment
+        /*
         streams.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
@@ -130,6 +80,7 @@ public class TaxiStream {
                 System.exit(-1);
             }
         });
+        */
 
     }
 }
