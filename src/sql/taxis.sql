@@ -69,7 +69,7 @@ insert into yellow_cab_trips
     ROWID
   from yellow_cab_trips_raw
   ORDER BY random()
-  LIMIT 100000
+  LIMIT 250000
   ;
 
 drop table yellow_cab_trips_raw;

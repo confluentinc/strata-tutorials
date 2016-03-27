@@ -17,7 +17,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # config.vm.network "forwarded_port", guest: 9092, host: 9092
   # config.vm.network "forwarded_port", guest: 8081, host: 8081
 
-  config.vm.synced_folder "~/.gnupg", "/root/.gnupg", owner: "root", group: "root"
+  # not sure if this is needed; experimenting with commenting this out
+  # config.vm.synced_folder "~/.gnupg", "/root/.gnupg", owner: "root", group: "root"
 
   config.vm.provider "virtualbox" do |vb|
     # change to 4096 if you're running hive
