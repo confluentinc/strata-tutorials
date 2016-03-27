@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-connect-standalone /vagrant/etc/connect-avro-standalone.properties \
- /vagrant/etc/sqlite-taxis.properties /vagrant/etc/hdfs.properties
+connect-standalone /mnt/etc/connect-avro-standalone.properties \
+ /home/vagrant/etc/sqlite-taxis.properties /home/vagrant/etc/hdfs.properties

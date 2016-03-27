@@ -9,7 +9,7 @@ chmod a+rw /tmp/vagrant-downloads
 
 if [ -z `which javac` ]; then
     apt-get -y update
-    apt-get install -y software-properties-common python-software-properties
+    apt-get install -y software-properties-common python-software-properties maven
     add-apt-repository -y ppa:webupd8team/java
     apt-get -y update
     apt-get -y upgrade
@@ -90,11 +90,11 @@ if [ ! -e confluent ]; then
 fi
 popd
 
-# Copy .profile and change owner to vagrant
-cp /vagrant/.profile /home/vagrant/
+# Copy profile and change owner to vagrant
+# cp /vagrant/.profile /home/vagrant/
 chown vagrant:vagrant /home/vagrant/.profile
 
-cp -r /vagrant/etc /mnt/
+cp -r /home/vagrant/etc /mnt/
 chown -R vagrant:vagrant /mnt/etc
 mkdir -p /mnt/logs
 chown -R vagrant:vagrant /mnt/logs
@@ -106,17 +106,26 @@ chown -R vagrant:vagrant /mnt/dfs
 chown -R vagrant:vagrant /mnt/dfs/name
 chown -R vagrant:vagrant /mnt/dfs/data
 
-cp /vagrant/setup.sh /home/vagrant
+#cp /vagrant/setup.sh /home/vagrant
 chown vagrant:vagrant /home/vagrant/setup.sh
 chmod +x /home/vagrant/setup.sh
 
-cp /vagrant/start.sh /home/vagrant
+#cp /vagrant/start.sh /home/vagrant
 chown vagrant:vagrant /home/vagrant/start.sh
 chmod +x /home/vagrant/start.sh
 
-cp /vagrant/clean_up.sh /home/vagrant
+#cp /vagrant/clean_up.sh /home/vagrant
 chown vagrant:vagrant /home/vagrant/clean_up.sh
 chmod +x /home/vagrant/clean_up.sh
+
+chown -R vagrant:vagrant /home/vagrant/scripts
+chown -R vagrant:vagrant /home/vagrant/src
+chown -R vagrant:vagrant /home/vagrant/data
+chown -R vagrant:vagrant /home/vagrant/config
+chown -R vagrant:vagrant /home/vagrant/etc
+chown vagrant:vagrant /home/vagrant/pom.xml
+
+chmod +x /home/vagrant/scripts/*.bash
 
 #cp /vagrant/*.sql /home/vagrant
 #chown vagrant:vagrant /home/vagrant/*.sql

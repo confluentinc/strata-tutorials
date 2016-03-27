@@ -25,6 +25,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     vb.customize ["modifyvm", :id, "--memory", "3072"]
   end
 
+  # copy scripts to remote machine
+  config.vm.provision "file", source: "vagrant/profile", destination: "/home/vagrant/.profile"
+  config.vm.provision "file", source: "vagrant/setup.sh", destination: "/home/vagrant/setup.sh"
+  config.vm.provision "file", source: "vagrant/start.sh", destination: "/home/vagrant/start.sh"
+  config.vm.provision "file", source: "vagrant/start_hive.sh", destination: "/home/vagrant/start_hive.sh"
+  config.vm.provision "file", source: "vagrant/clean_up.sh", destination: "/home/vagrant/clean_up.sh"
+
+  # copy
+  config.vm.provision "file", source: "scripts", destination: "/home/vagrant/scripts"
+  config.vm.provision "file", source: "src", destination: "/home/vagrant/src"
+  config.vm.provision "file", source: "config", destination: "/home/vagrant/config"
+  config.vm.provision "file", source: "etc", destination: "/home/vagrant/etc"
+  config.vm.provision "file", source: "pom.xml", destination: "/home/vagrant/pom.xml"
+  config.vm.provision "file", source: "data", destination: "/home/vagrant/data"
+
     # use vagrant-cachier if available (common package cache)
     # (install with "vagrant plugin install vagrant-cachier")
     if Vagrant.has_plugin?("vagrant-cachier")

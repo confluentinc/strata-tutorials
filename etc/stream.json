@@ -8,6 +8,6 @@
   "value.serializer" : "io.confluent.strata.utils.GenericAvroSerializer",
   "value.deserializer" : "io.confluent.strata.utils.GenericAvroDeserializer",
   "timestamp.extractor" : "io.confluent.strata.TaxiTimeStampExtractor",
-  "neighborhoods" : ["/vagrant/data/ZillowNeighborhoods-NY", "/vagrant/data/ZillowNeighborhoods-NJ"],
+  "neighborhoods" : ["/home/vagrant/data/ZillowNeighborhoods-NY", "/home/vagrant/data/ZillowNeighborhoods-NJ"],
   "auto.offset.reset" : "earliest"
 }
