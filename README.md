@@ -7,6 +7,20 @@ This repo contains content for the "Building Scalable Data Pipelines
 With Kafka" tutorial (Kafka Connect, Kafka Streams, Security) at Strata
 San Jose 2016
 
+If you are getting these materials tonight:
+===========================================
+If your hotel has decent wifi (or you're in the office) you may want to
+do the following:
+
+    git clone https://github.com/confluentinc/strata-tutorials.git
+    cd strata-tutorials
+    mvn assembly:assembly
+    vagrant up
+    vagrant halt 
+
+This will get all the dependencies you need downloaded so things run
+better tomorrow.
+
 Getting the data
 ----------------
 If you want to rebuild the data, run the script in 
@@ -16,6 +30,14 @@ and shrink  the DB. You can hack this file to include more data.
 
 But there is a small (250k) sample of lines from that database in the
 repo already. You can just use that one.
+
+Running from your host machine
+==============================
+If you prefer to edit and compile on your host machine, you can do that!
+Vagrant maps the project directory from your host machine onto the vm 
+under ```/vagrant```. So just use execute the jar in
+```/vagrant/target```.
+
 
 Building and running things
 ===========================

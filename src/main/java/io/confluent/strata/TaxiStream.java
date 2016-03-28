@@ -50,27 +50,33 @@ public class TaxiStream {
         final Serializer<Long> longSerializer = new LongSerializer();
         final Serializer<Windowed<String>> windowedStringSerializer = new WindowedStringSerializer();
 
-        // 1. Create (or load) the streams configuration
+        // Create (or load) the streams configuration
+        StreamsConfig config = new StreamsConfig(settings);
 
 
-        // 2. Create a KStreamBuilder object
+        // Create a KStreamBuilder object
+        KStreamBuilder builder = new KStreamBuilder();
 
 
-        // 3. Tell your streams job where to consume data from
+        // Tell your streams job where to consume data from
+        KStream<GenericRecord, GenericRecord> taxiRides =
+                builder.stream(genericRecordDeserializer, genericRecordDeserializer, "taxis_jdbc_yellow_cab_trips");
 
-        // 4. Transform the data
         List<String> neighborhoods = (List<String>) propertyFile.get("neighborhoods");
 
-        // 9. Count messages by key
-        final long oneDay = 24 * 60 * 60 * 1000;
+        // Transform the data
+        /*
+         *
+         *  ADD YOUR CODE HERE!
+         *
+         *
+         */
 
-        // 10. Write the results out to another stream.
-
-        // 6. Start the streams job
+        // Start the streams job
+        KafkaStreams streams = new KafkaStreams(builder, config);
+        streams.start();
 
         // Set a handler for uncaught exceptions within the framework:
-        // uncomment this section if the KStreams object is called "streams", or rename then uncomment
-        /*
         streams.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
@@ -80,7 +86,16 @@ public class TaxiStream {
                 System.exit(-1);
             }
         });
-        */
 
+        // Set a handler for uncaught exceptions within the framework:
+        streams.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                e.printStackTrace(System.err);
+                System.err.printf("uncaught exception in thread %s: %s\n", t.toString(), e.toString());
+                System.err.flush();
+                System.exit(-1);
+            }
+        });
     }
 }
