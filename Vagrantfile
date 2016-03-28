@@ -27,10 +27,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # copy scripts to remote machine
   config.vm.provision "file", source: "vagrant/profile", destination: "/home/vagrant/.profile"
-  config.vm.provision "file", source: "vagrant/setup.sh", destination: "/home/vagrant/setup.sh"
-  config.vm.provision "file", source: "vagrant/start.sh", destination: "/home/vagrant/start.sh"
-  config.vm.provision "file", source: "vagrant/start_hive.sh", destination: "/home/vagrant/start_hive.sh"
-  config.vm.provision "file", source: "vagrant/clean_up.sh", destination: "/home/vagrant/clean_up.sh"
+  # config.vm.provision "file", source: "vagrant/setup.sh", destination: "/home/vagrant/setup.sh"
+  # config.vm.provision "file", source: "vagrant/start.sh", destination: "/home/vagrant/start.sh"
+  # config.vm.provision "file", source: "vagrant/start_hive.sh", destination: "/home/vagrant/start_hive.sh"
+  # config.vm.provision "file", source: "vagrant/clean_up.sh", destination: "/home/vagrant/clean_up.sh"
 
   # copy
   config.vm.provision "file", source: "scripts", destination: "/home/vagrant/scripts"

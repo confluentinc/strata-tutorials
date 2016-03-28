@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.confluent.strata.geo.ReverseGeocoder;
 import io.confluent.strata.utils.GenericAvroDeserializer;
 import io.confluent.strata.utils.GenericAvroSerializer;
+import io.confluent.strata.utils.LongAsStringSerializer;
 import io.confluent.strata.utils.WindowedStringSerializer;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
@@ -54,6 +55,7 @@ public class TaxiStreamSolution {
         final Serializer<String> stringSerializer = new StringSerializer();
         final Deserializer<Long> longDeserializer = new LongDeserializer();
         final Serializer<Long> longSerializer = new LongSerializer();
+        final Serializer<Long> longAsStringSerializer = new LongAsStringSerializer();
         final Serializer<Windowed<String>> windowedStringSerializer = new WindowedStringSerializer();
 
         // 1. Create (or load) the streams configuration
@@ -86,7 +88,7 @@ public class TaxiStreamSolution {
                 stringDeserializer, longDeserializer);
 
         // 10. Write the results out to another stream.
-        cabRidesPerDay.to("countsByDay",windowedStringSerializer,longSerializer);
+        cabRidesPerDay.to("countsByDay",windowedStringSerializer,longAsStringSerializer);
 
         // A third example for the adventurous. This time, we'll calculate a moving average.
         // First, define a schema for computing averages (a count and a total):

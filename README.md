@@ -48,8 +48,8 @@ And if you don't have a ```~/.gnupg``` folder...
 
 Then on the vm
 
-    ./setup.sh
-    ./start.sh
+    scripts/setup.sh
+    scripts/start.sh
     # I really could just type chmod to make these executable, but whatever
     bash /vagrant/scripts/start-connect.bash
     bash /vagrant/scripts/stream-test.bash
@@ -58,7 +58,7 @@ To view stream output
 
     # you can run hive, look at tables, and select data
     # or you can look at data in topics
-    bash /vagrant/scripts/show_topic.bash geocodedRides
+    bash /home/vagrant/scripts/show_topic.bash geocodedRides
 
 
 Old directions for getting the data

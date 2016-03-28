@@ -83,15 +83,12 @@ if [ ! -e confluent ]; then
     popd
 
     tar xvzf /tmp/vagrant-downloads/confluent-2.1.0-alpha1-2.11.7.tar.gz
-    #ln -s /opt/confluent-2.1.0-alpha1 /opt/confluent
     mv /opt/confluent-2.1.0-alpha1 /opt/confluent
     chown -R vagrant:vagrant /opt/confluent
-    #mkdir /opt/confluent-2.1.0-alpha1/logs
 fi
 popd
 
 # Copy profile and change owner to vagrant
-# cp /vagrant/.profile /home/vagrant/
 chown vagrant:vagrant /home/vagrant/.profile
 
 cp -r /home/vagrant/etc /mnt/
@@ -106,27 +103,21 @@ chown -R vagrant:vagrant /mnt/dfs
 chown -R vagrant:vagrant /mnt/dfs/name
 chown -R vagrant:vagrant /mnt/dfs/data
 
-#cp /vagrant/setup.sh /home/vagrant
-chown vagrant:vagrant /home/vagrant/setup.sh
-chmod +x /home/vagrant/setup.sh
+chown vagrant:vagrant /home/vagrant/scripts/setup.sh
+chmod +x /home/vagrant/scripts/setup.sh
 
-#cp /vagrant/start.sh /home/vagrant
-chown vagrant:vagrant /home/vagrant/start.sh
-chmod +x /home/vagrant/start.sh
+chown vagrant:vagrant /home/vagrant/scripts/start.sh
+chmod +x /home/vagrant/scripts/start.sh
 
-#cp /vagrant/clean_up.sh /home/vagrant
-chown vagrant:vagrant /home/vagrant/clean_up.sh
-chmod +x /home/vagrant/clean_up.sh
+chown vagrant:vagrant /home/vagrant/scripts/clean_up.sh
+chmod +x /home/vagrant/scripts/clean_up.sh
 
 chown -R vagrant:vagrant /home/vagrant/scripts
 chown -R vagrant:vagrant /home/vagrant/src
 chown -R vagrant:vagrant /home/vagrant/data
-# chown -R vagrant:vagrant /home/vagrant/config
 chown -R vagrant:vagrant /home/vagrant/etc
 chown vagrant:vagrant /home/vagrant/pom.xml
 
 chmod +x /home/vagrant/scripts/*.bash
 
-#cp /vagrant/*.sql /home/vagrant
-#chown vagrant:vagrant /home/vagrant/*.sql
 
