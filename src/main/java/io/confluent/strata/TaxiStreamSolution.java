@@ -58,36 +58,35 @@ public class TaxiStreamSolution {
         final Serializer<Long> longAsStringSerializer = new LongAsStringSerializer();
         final Serializer<Windowed<String>> windowedStringSerializer = new WindowedStringSerializer();
 
-        // 1. Create (or load) the streams configuration
+        // Create (or load) the streams configuration
         StreamsConfig config = new StreamsConfig(settings);
 
 
-        // 2. Create a KStreamBuilder object
+        // Create a KStreamBuilder object
         KStreamBuilder builder = new KStreamBuilder();
 
-
-        // 3. Tell your streams job where to consume data from
+        // Tell your streams job where to consume data from
         KStream<GenericRecord, GenericRecord> taxiRides =
                 builder.stream(genericRecordDeserializer, genericRecordDeserializer, "taxis_jdbc_yellow_cab_trips");
 
-        // 4. Transform the data
+        // Transform the data
         List<String> neighborhoods = (List<String>) propertyFile.get("neighborhoods");
         KStream<String, GenericRecord> geocodedRides = taxiRides
                 .map(new ReverseGeocoder(neighborhoods, "pickup_latitude", "pickup_longitude", "neighborhood"))
-                // 5. Write the data out to another Kafka topic
-                // 8. Tell Kafka Streams that you want to write the stream out to Kafka, but still use it.
+                // Write the data out to another Kafka topic
+                // Tell Kafka Streams that you want to write the stream out to Kafka, but still use it.
                 .through("geocodedRides",
                     stringSerializer, genericRecordSerializer,
                     stringDeserializer, genericRecordDeserializer);
 
-        // 9. Count messages by key
+        // Count messages by key
         final long oneDay = 24 * 60 * 60 * 1000;
         KTable cabRidesPerDay = geocodedRides.countByKey(
                 HoppingWindows.of("days").every(oneDay).until(oneDay*365),
                 stringSerializer, longSerializer,
                 stringDeserializer, longDeserializer);
 
-        // 10. Write the results out to another stream.
+        // Write the results out to another stream.
         cabRidesPerDay.to("countsByDay",windowedStringSerializer,longAsStringSerializer);
 
         // A third example for the adventurous. This time, we'll calculate a moving average.
@@ -132,7 +131,7 @@ public class TaxiStreamSolution {
         movingAverageDistance.to("movingAvgDistance",windowedStringSerializer,genericRecordSerializer);
 
 
-        // 6. Start the streams job
+        // Start the streams job
         KafkaStreams streams = new KafkaStreams(builder, config);
         streams.start();
 
