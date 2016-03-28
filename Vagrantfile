@@ -35,7 +35,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # copy
   config.vm.provision "file", source: "scripts", destination: "/home/vagrant/scripts"
   config.vm.provision "file", source: "src", destination: "/home/vagrant/src"
-  config.vm.provision "file", source: "config", destination: "/home/vagrant/config"
+  # config.vm.provision "file", source: "config", destination: "/home/vagrant/config"
   config.vm.provision "file", source: "etc", destination: "/home/vagrant/etc"
   config.vm.provision "file", source: "pom.xml", destination: "/home/vagrant/pom.xml"
   config.vm.provision "file", source: "data", destination: "/home/vagrant/data"

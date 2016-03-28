@@ -121,7 +121,7 @@ chmod +x /home/vagrant/clean_up.sh
 chown -R vagrant:vagrant /home/vagrant/scripts
 chown -R vagrant:vagrant /home/vagrant/src
 chown -R vagrant:vagrant /home/vagrant/data
-chown -R vagrant:vagrant /home/vagrant/config
+# chown -R vagrant:vagrant /home/vagrant/config
 chown -R vagrant:vagrant /home/vagrant/etc
 chown vagrant:vagrant /home/vagrant/pom.xml
 
