@@ -7,22 +7,71 @@ This repo contains content for the "Building Scalable Data Pipelines
 With Kafka" tutorial (Kafka Connect, Kafka Streams, Security) at Strata
 San Jose 2016
 
-If you are getting these materials tonight:
-===========================================
-If your hotel has decent wifi (or you're in the office) you may want to
-do the following:
+Getting Started:
+================
+We use [Vagrant](https://www.vagrantup.com) to help manage virtual
+machines during development and [VirtualBox](https://www.virtualbox.org)
+for running VMs. We use git for version control, maven to build, and
+Oracle JDK 7+ for development. If you have this stuff installed, you 
+can get started with a set of commands like this:
 
     git clone https://github.com/confluentinc/strata-tutorials.git
     cd strata-tutorials
     mvn assembly:assembly
     vagrant up
-    vagrant halt 
 
-This will get all the dependencies you need downloaded so things run
-better tomorrow.
+You can connect to the VM by typing
 
-Getting the data
-----------------
+    vagrant ssh
+    
+and then run other commands.  Within the VM, you need to start some
+services. To do this, ssh to the VM then type
+
+    /vagrant/scripts/setup.sh
+    /vagrant/scripts/start.sh
+    
+This will install dependencies and start services (Kafka, Hadoop, etc).
+
+The exercise:
+=============
+Edit the files `etc/sqlite-taxis.properties` and `/etc/hdfs.properties`
+for the Kafka Connect tutorial. (Solutions are in 
+`etc/sqlite-taxis-solutions.properties` and 
+`/etc/hdfs-solutions.properties`.) 
+
+Edit the file `src/main/java/io/confluent/strata/TaxiStream.java` for
+the Kafka Streams tutorial. (Solution is in 
+`src/main/java/io/confluent/strata/TaxiStreamSolution.java`.)
+
+To start connect, type
+
+    bash /vagrant/scripts/start-connect.bash
+    
+Or if you just want to see the solution (or start on the Streams
+exercise), type:
+
+    bash /vagrant/scripts/start-connect-solution.bash
+    
+To run the streams job run
+
+    bash /vagrant/stream-test.bash
+    
+or to run the solution
+
+    bash /vagrant/stream-test-solution.bash
+    
+To inspect the geocoded taxi rides
+    
+    bash /vagrant/show-geocoded-rides.bash
+    
+To inspect the counts
+
+    bash /show-county-by-day.bash
+    
+ (Yeah, I know there's a typo. I left it in for funsies.)
+
+Where the data comes from (and how to load it yourself)
+-------------------------------------------------------
 If you want to rebuild the data, run the script in 
 ```scripts/get_taxi_rides.bash```. This will download the taxi data, 
 clean it, load it into a sqlite database, sample 100k random taxi rides,
