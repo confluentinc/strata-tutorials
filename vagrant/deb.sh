@@ -89,9 +89,10 @@ fi
 popd
 
 # Copy profile and change owner to vagrant
+cp /vagrant/etc/profile /home/vagrant/.profile
 chown vagrant:vagrant /home/vagrant/.profile
 
-cp -r /home/vagrant/etc /mnt/
+cp -r /vagrant/etc /mnt/
 chown -R vagrant:vagrant /mnt/etc
 mkdir -p /mnt/logs
 chown -R vagrant:vagrant /mnt/logs
@@ -103,21 +104,21 @@ chown -R vagrant:vagrant /mnt/dfs
 chown -R vagrant:vagrant /mnt/dfs/name
 chown -R vagrant:vagrant /mnt/dfs/data
 
-chown vagrant:vagrant /home/vagrant/scripts/setup.sh
-chmod +x /home/vagrant/scripts/setup.sh
+chown vagrant:vagrant /vagrant/scripts/setup.sh
+chmod +x /vagrant/scripts/setup.sh
 
-chown vagrant:vagrant /home/vagrant/scripts/start.sh
-chmod +x /home/vagrant/scripts/start.sh
+chown vagrant:vagrant /vagrant/scripts/start.sh
+chmod +x /vagrant/scripts/start.sh
 
-chown vagrant:vagrant /home/vagrant/scripts/clean_up.sh
-chmod +x /home/vagrant/scripts/clean_up.sh
+chown vagrant:vagrant /vagrant/scripts/clean_up.sh
+chmod +x /vagrant/scripts/clean_up.sh
 
-chown -R vagrant:vagrant /home/vagrant/scripts
-chown -R vagrant:vagrant /home/vagrant/src
-chown -R vagrant:vagrant /home/vagrant/data
-chown -R vagrant:vagrant /home/vagrant/etc
-chown vagrant:vagrant /home/vagrant/pom.xml
+#chown -R vagrant:vagrant /home/vagrant/scripts
+#chown -R vagrant:vagrant /home/vagrant/src
+#chown -R vagrant:vagrant /home/vagrant/data
+#chown -R vagrant:vagrant /home/vagrant/etc
+# chown vagrant:vagrant /home/vagrant/pom.xml
 
-chmod +x /home/vagrant/scripts/*.bash
+chmod +x /vagrant/scripts/*.bash
 
 

@@ -61,7 +61,6 @@ public class TaxiStreamSolution {
         // Create (or load) the streams configuration
         StreamsConfig config = new StreamsConfig(settings);
 
-
         // Create a KStreamBuilder object
         KStreamBuilder builder = new KStreamBuilder();
 

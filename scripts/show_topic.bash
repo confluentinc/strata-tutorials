@@ -12,5 +12,5 @@ kafka-console-consumer --zookeeper localhost:2181 --from-beginning \
  --formatter io.confluent.kafka.formatter.AvroMessageFormatter \
  --property schema.registry.url=http://localhost:8081 \
  --max-messages 50 \
- --print.key=true
+ --property print.key=true \
  --topic $@

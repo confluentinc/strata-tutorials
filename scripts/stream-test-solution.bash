@@ -7,4 +7,4 @@ kafka-topics --zookeeper localhost:2181 --create --replication-factor 1 --partit
 kafka-topics --zookeeper localhost:2181 --create --replication-factor 1 --partitions 1 --topic countsByDay
 
 java -cp /vagrant/target/strata-tutorial-0.1-SNAPSHOT-jar-with-dependencies.jar \
- -Dlog4j.debug io.confluent.strata.TaxiStream /vagrant/etc/stream.json
+ -Dlog4j.debug io.confluent.strata.TaxiStreamSolution /vagrant/etc/stream.json
