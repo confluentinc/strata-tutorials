@@ -32,6 +32,11 @@ services. To do this, ssh to the VM then type
     
 This will install dependencies and start services (Kafka, Hadoop, etc).
 
+The contents of the `strata-tutorials` directory on the host machine
+are mapped to `/vagrant/` on the VM. This makes development easier:
+just edit and compile on your host machine (with your favorite IDE) and
+run your job on the VM.
+
 The exercise:
 =============
 Edit the files `etc/sqlite-taxis.properties` and `/etc/hdfs.properties`
@@ -73,7 +78,7 @@ To inspect the counts
 Where the data comes from (and how to load it yourself)
 -------------------------------------------------------
 If you want to rebuild the data, run the script in 
-```scripts/get_taxi_rides.bash```. This will download the taxi data, 
+`scripts/get_taxi_rides.bash`. This will download the taxi data, 
 clean it, load it into a sqlite database, sample 100k random taxi rides,
 and shrink  the DB. You can hack this file to include more data.
 
@@ -84,8 +89,8 @@ Running from your host machine
 ==============================
 If you prefer to edit and compile on your host machine, you can do that!
 Vagrant maps the project directory from your host machine onto the vm 
-under ```/vagrant```. So just use execute the jar in
-```/vagrant/target```.
+under `/vagrant`. So just use execute the jar in
+`/vagrant/target`.
 
 
 Building and running things
@@ -124,13 +129,13 @@ Here's what I did (and what the scripts above does)
 * Download the [NY yellow cab data](http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml) 
 from December 2015
 * Uncompress the file
-* Run the script ```clean.bash``` to strip out the header (note that
+* Run the script `clean.bash` to strip out the header (note that
  it just contains a little awk, so you don't really need a script).
 * Install a recent version of [sqlite](https://www.sqlite.org/download.html).
- (I did ```brew install sqlite``` on my mac.)
-* From a shell, run ```sqlite3 yellowCabDataDec2015.db``` to create the
+ (I did `brew install sqlite` on my mac.)
+* From a shell, run `sqlite3 yellowCabDataDec2015.db` to create the
  database and get a shell 
-* Run the contents of the ```taxis.sql``` script to create the taxi 
+* Run the contents of the `taxis.sql` script to create the taxi 
 data (and import the weather data).
 
 I got the weather data from ftp://ftp.ncdc.noaa.gov/pub/data/noaa/725053-94728-2015.gz. 
